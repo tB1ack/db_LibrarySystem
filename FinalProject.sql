@@ -1,4 +1,4 @@
-USE db_LibrarySystem
+USE db_test
 GO
 
 /*
@@ -12,18 +12,18 @@ CREATE TABLE PUBLISHER (
 );
 
 CREATE TABLE BOOK (
-	BookId INT PRIMARY KEY NOT NULL,
+	BookId INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
 	Title varchar(50) NOT NULL,
 	PublisherName varchar(50) NOT NULL CONSTRAINT fk_PUBLISHER_Name FOREIGN KEY REFERENCES PUBLISHER(Name) ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE TABLE BOOK_AUTHORS (
-	BookId INT PRIMARY KEY NOT NULL CONSTRAINT fk_BOOK_BookId FOREIGN KEY REFERENCES BOOK(BookId) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	BookId INT PRIMARY KEY NOT NULL CONSTRAINT fk_BOOK_BookId FOREIGN KEY REFERENCES BOOK(BookId) ON UPDATE CASCADE ON DELETE CASCADE,
 	AuthorName varchar(50) NOT NULL
 );
 
 CREATE TABLE LIBRARY_BRANCH (
-	BranchId INT PRIMARY KEY NOT NULL IDENTITY (1,1),
+	BranchId INT IDENTITY (1,1) PRIMARY KEY NOT NULL,
 	BranchName varchar(50) NOT NULL,
 	Address varchar(50) NOT NULL
 );
@@ -36,22 +36,43 @@ CREATE TABLE BORROWER (
 );
 
 CREATE TABLE BOOK_LOANS (
-	BookId INT NOT NULL CONSTRAINT fk_BOOK_BookId1 FOREIGN KEY REFERENCES BOOK(BookId) ON UPDATE NO ACTION ON DELETE NO ACTION,
-	BranchId INT NOT NULL CONSTRAINT fk_LIBRARY_BRANCH_BranchId FOREIGN KEY REFERENCES LIBRARY_BRANCH(BranchId) ON UPDATE NO ACTION ON DELETE NO ACTION,
-	CardNo INT NOT NULL CONSTRAINT fk_BORROWER_CardNo FOREIGN KEY REFERENCES BORROWER(CardNo) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	LoanId INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+	BookId INT NOT NULL CONSTRAINT fk_BOOK_LoanBookId FOREIGN KEY REFERENCES BOOK(BookId) ON UPDATE CASCADE ON DELETE CASCADE,
+	BranchId INT NOT NULL CONSTRAINT fk_LIBRARY_BRANCH_BranchId FOREIGN KEY REFERENCES LIBRARY_BRANCH(BranchId) ON UPDATE CASCADE ON DELETE CASCADE,
+	CardNo INT NOT NULL CONSTRAINT fk_BORROWER_CardNo FOREIGN KEY REFERENCES BORROWER(CardNo) ON UPDATE CASCADE ON DELETE CASCADE,
 	DateOut DATE NOT NULL,
 	DueDate DATE NOT NULL
 );
 
 CREATE TABLE BOOK_COPIES(
-	BookId INT NOT NULL CONSTRAINT fk_BOOK_BookId2 FOREIGN KEY REFERENCES BOOK(BookId) ON UPDATE NO ACTION ON DELETE NO ACTION,
-	BranchId INT NOT NULL CONSTRAINT fk_LIBRARY_BRANCH_BranchId1 FOREIGN KEY REFERENCES LIBRARY_BRANCH(BranchId) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CopyId INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
+	BookId INT NOT NULL CONSTRAINT fk_BOOK_CopiesBookId FOREIGN KEY REFERENCES BOOK(BookId) ON UPDATE CASCADE ON DELETE CASCADE,
+	BranchId INT NOT NULL CONSTRAINT fk_LIBRARY_BRANCH_BranchId1 FOREIGN KEY REFERENCES LIBRARY_BRANCH(BranchId) ON UPDATE CASCADE ON DELETE CASCADE,
 	No_Of_Copies INT NOT NULL
 );
 
 /*
 -here we are going to populate the tables
 */
+
+INSERT INTO PUBLISHER
+	(Name, Address, Phone)
+	VALUES
+		('Penguin Classics','5648 NE London Ave','819-457-8954'),
+		('Wordsworth Editions Ltd','8B East Street','423-895-4256'),
+		('Scribner','1230 Avenue of the Americas','212-698-7000'),
+		('W. W. Norton & Company','500 Fifth Avenue','212-458-7895'),
+		('Berkley','1653 Dell Rd','758-985-3492'),
+		('Back Bay Books','871 Welch Ave','789-452-7843'),
+		('Warner Books','962 Electric Ave','164-459-7892'),
+		('Ballantine Books','6432 Easy Street','457-489-1234'),
+		('Scholastic','78B SW Crew Blvd','632-651-6987'),
+		('Dover Publications','5986 EastMoreland St','897-856-8362'),
+		('New English Library Ltd','23164 Lakeshore','123-149-1789'),
+		('Broadway','678 Treelake Canal','234-265-2795'),
+		('Vintage Books','3A Opal Dr','364-329-3267'),
+		('Picador USA','4316 Azeroth Ln','597-562-5397')
+;
 
  INSERT INTO BOOK
 	(Title, PublisherName)
@@ -79,49 +100,39 @@ CREATE TABLE BOOK_COPIES(
 		('The Lost Tribe','Picador USA')
 ;
 
-INSERT INTO PUBLISHER
-	(Name, Address, Phone)
-	VALUES
-		('Penguin Classics','5648 NE London Ave','819-457-8954'),
-		('Wordsworth Editions Ltd','8B East Street','423-895-4256'),
-		('Scribner','1230 Avenue of the Americas','212-698-7000'),
-		('W. W. Norton & Company','500 Fifth Avenue','212-458-7895'),
-		('Berkley','1653 Dell Rd','758-985-3492'),
-		('Back Bay Books','871 Welch Ave','789-452-7843'),
-		('Warner Books','962 Electric Ave','164-459-7892'),
-		('Ballantine Books','6432 Easy Street','457-489-1234'),
-		('Scholastic','78B SW Crew Blvd','632-651-6987'),
-		('Dover Publications','5986 EastMoreland St','897-856-8362'),
-		('New English Library Ltd','23164 Lakeshore','123-149-1789'),
-		('Broadway','678 Treelake Canal','234-265-2795'),
-		('Vintage Books','3A Opal Dr','364-329-3267'),
-		('Picador USA','4316 Azeroth Ln','597-562-5397')
-;
-
 INSERT INTO BOOK_AUTHORS
 	(BookId, AuthorName)
 	VALUES
-		(2, 'Miguel de Cervantes'),
-		(3, 'Homer'),
-		(4, 'Herman Melville'),
-		(5, 'F. Scott Fitzgerald'),
-		(6, 'Jane Austen'),
-		(7, 'George Orwell'),
-		(8, 'Charles Dickens'),
-		(9, 'J.D. Salinger'),
-		(10, 'Harper Lee'),
-		(11, 'Earnest Hemingway'),
+		(1, 'Miguel de Cervantes'),
+		(2, 'Homer'),
+		(3, 'Herman Melville'),
+		(4, 'F. Scott Fitzgerald'),
+		(5, 'Jane Austen'),
+		(6, 'George Orwell'),
+		(7, 'Charles Dickens'),
+		(8, 'J.D. Salinger'),
+		(9, 'Harper Lee'),
+		(10, 'Earnest Hemingway'),
+		(11, 'J.R.R. Tolkien'),
 		(12, 'J.R.R. Tolkien'),
 		(13, 'J.R.R. Tolkien'),
-		(14, 'J.R.R. Tolkien'),
-		(15, 'Ken Kesey'),
-		(16, 'J.K. Rowling'),
-		(17, 'Jack London'),
-		(18, 'Ray Bradbury'),
-		(19, 'Stephen King'),
-		(20, 'Tim O''Brien'),
-		(21, 'Cormac McCarthy'),
-		(22, 'Mark Lee')
+		(14, 'Ken Kesey'),
+		(15, 'J.K. Rowling'),
+		(16, 'Jack London'),
+		(17, 'Ray Bradbury'),
+		(18, 'Stephen King'),
+		(19, 'Tim O''Brien'),
+		(20, 'Cormac McCarthy'),
+		(21, 'Mark Lee')
+;
+
+INSERT INTO LIBRARY_BRANCH
+	(BranchName, Address)
+	VALUES
+		('West Oak', '451 E Park Ave'),
+		('Sharpstown', '8967 N Billshire St'),
+		('Central', '24756 S Canoe Blvd'),
+		('Miller','3567 W Slate Rock Rd')
 ;
 
 INSERT INTO BORROWER
@@ -137,66 +148,10 @@ INSERT INTO BORROWER
 		(123128,'Virginia Bradbury','678 Stotts Circle','624-486-1537')
 ;
 
-INSERT INTO LIBRARY_BRANCH
-	(BranchName, Address)
-	VALUES
-		('West Oak', '451 E Park Ave'),
-		('Sharpstown', '8967 N Billshire St'),
-		('Central', '24756 S Canoe Blvd'),
-		('Miller','3567 W Slate Rock Rd')
-;
-
-INSERT INTO BOOK_COPIES
-	(BookId,BranchId,No_Of_Copies)
-	VALUES
-		(2,1,2),
-		(2,3,4),
-		(3,2,3),
-		(3,4,2),
-		(4,1,2),
-		(4,3,4),
-		(5,2,3),
-		(5,4,2),
-		(6,1,2),
-		(6,3,4),
-		(7,2,3),
-		(7,4,2),
-		(8,1,2),
-		(8,3,4),
-		(9,2,3),
-		(9,4,2),
-		(10,1,2),
-		(10,3,4),
-		(11,2,3),
-		(11,4,2),
-		(12,1,2),
-		(12,3,4),
-		(13,2,3),
-		(13,4,2),
-		(14,1,3),
-		(14,3,2),
-		(15,2,2),
-		(15,4,4),
-		(16,1,3),
-		(16,3,2),
-		(17,2,3),
-		(17,4,2),
-		(18,1,2),
-		(18,3,4),
-		(19,2,3),
-		(19,3,3),
-		(19,4,2),
-		(20,1,3),
-		(20,3,2),
-		(21,2,2),
-		(21,4,4),
-		(22,1,2),
-		(22,2,3)
-;
-
 INSERT INTO BOOK_LOANS
 	(BookId,BranchId,CardNo,DateOut,DueDate)
 	VALUES
+		(1,1,123306,'2017-10-04','2017-10-18'),
 		(2,1,123128,'2017-11-05','2017-11-19'),
 		(2,1,123217,'2017-11-04','2017-11-18'),
 		(2,3,123306,'2017-11-01','2017-11-15'),
@@ -245,14 +200,71 @@ INSERT INTO BOOK_LOANS
 		(20,3,123217,'2017-10-06','2017-10-20'),
 		(20,3,123128,'2017-10-06','2017-10-20'),
 		(21,2,123495,'2017-10-05','2017-10-19'),
-		(21,2,123851,'2017-10-04','2017-10-18'),
-		(22,1,123306,'2017-10-04','2017-10-18')
+		(21,2,123851,'2017-10-04','2017-10-18')
 ;
 
+INSERT INTO BOOK_COPIES
+	(BookId,BranchId,No_Of_Copies)
+	VALUES
+		(1,1,2),
+		(1,2,3),
+		(2,1,2),
+		(2,3,4),
+		(3,2,3),
+		(3,4,2),
+		(4,1,2),
+		(4,3,4),
+		(5,2,3),
+		(5,4,2),
+		(6,1,2),
+		(6,3,4),
+		(7,2,3),
+		(7,4,2),
+		(8,1,2),
+		(8,3,4),
+		(9,2,3),
+		(9,4,2),
+		(10,1,2),
+		(10,3,4),
+		(11,2,3),
+		(11,4,2),
+		(12,1,2),
+		(12,3,4),
+		(13,2,3),
+		(13,4,2),
+		(14,1,3),
+		(14,3,2),
+		(15,2,2),
+		(15,4,4),
+		(16,1,3),
+		(16,3,2),
+		(17,2,3),
+		(17,4,2),
+		(18,1,2),
+		(18,3,4),
+		(19,2,3),
+		(19,3,3),
+		(19,4,2),
+		(20,1,3),
+		(20,3,2),
+		(21,2,2),
+		(21,4,4)
+;
+
+SELECT * FROM PUBLISHER
 SELECT * FROM BOOK
 SELECT * FROM BOOK_AUTHORS
-SELECT * FROM BOOK_COPIES
-SELECT * FROM BOOK_LOANS
 SELECT * FROM LIBRARY_BRANCH
-SELECT * FROM PUBLISHER
 SELECT * FROM BORROWER
+SELECT * FROM BOOK_LOANS
+SELECT * FROM BOOK_COPIES
+
+/*
+DROP TABLE BOOK_COPIES;
+DROP TABLE BOOK_LOANS;
+DROP TABLE BORROWER;
+DROP TABLE LIBRARY_BRANCH;
+DROP TABLE BOOK_AUTHORS;
+DROP TABLE BOOK;
+DROP TABLE PUBLISHER;
+*/
